@@ -1,0 +1,44 @@
+.mt {
+  color: #fff;
+    background-color: #FE4204;
+    display: block;
+    padding: 6px 12px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 50px;
+    width: 200px;
+    height: 50px;
+    font-size: 25px;
+    font-weight: normal;
+    font-family:monospace;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.m0auto {
+  display: block;
+  margin: 0 auto;
+}
+
+.addCss {
+  color: #fff;
+    background-color: rgb(24, 103, 208);
+    display: block;
+    padding: 6px 12px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 50px;
+    width: 200px;
+    height: 50px;
+    font-size: 25px;
+    font-weight: normal;
+    font-family:monospace;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.addCss:hover {
+  background-color: rgb(24, 103, 208,0.7);
+}

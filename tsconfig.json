@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": "src"
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "lib/stripe.js", "CheckoutForm.jsx", "lib/credit.js", "pages/api/checkout_sessions.js", "pages/index2.js", "pages/api/checkout_sessions.js", "pages/index2.js", "pages/api/create-payment-intent.js", "pages/api/create-payment-intent.js"],
+  "exclude": ["node_modules"]
+}

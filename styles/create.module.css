@@ -1,0 +1,52 @@
+.title {
+  text-align: left;
+  margin-top: 3%;
+}
+
+.form {
+  width: 500px;
+  height: 20px;
+}
+
+.fieldset_style {
+  width: 500px;
+  height: 550px;
+  text-align: center;
+  margin: auto;
+  margin-top: 30px;
+  background-color: #f8f8f8;
+  border: none;
+}
+
+.button_style {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  float: left;
+  margin-top: 3%;
+  margin-left: 4px;
+  border-radius: 5px 5px 5px 5px;
+}
+
+.userName {
+  margin-bottom: 1%;
+}
+
+.form_name {
+  margin-left: 2%;
+  width: 43%;
+}
+
+.name_title {
+  text-align: left;
+}
+
+.form_title {
+  text-align: left;
+  margin-top: 3px;
+}
+
+.subTitle {
+  color: red;
+  font-size: small;
+}

@@ -1,0 +1,211 @@
+.searchWrapper {
+    /* position: fixed;
+    スクロールしても表示されるように位置を固定 */
+    height: 180px;
+    /* 縦幅を180pxにする */
+    width: 100%;
+    /* 横幅を固定 */
+    background-color: rgba(255, 255, 255, 0.9);
+    vertical-align: center;
+    /* インラインボックス、インラインブロック、表セルボックスの垂直方向の配置を設定 */
+    border: 2px;
+    /* 要素の境界を設定 */
+    z-index: 1;
+    /* 上に表示されるようにする(数が多いほど上に来る。例えば-1にすると裏側に行き見えなくなります) */
+}
+
+.serchTitle {
+    margin-left: 20%;
+    /* マージンの左側wp20px開ける */
+    font-size: 18px;
+    font-weight: bold;
+    /* 文字の太さ */
+}
+
+.searchForm {
+    margin: auto;
+    /*検索窓を中央に配置*/
+    text-align: center;
+}
+
+.searchNameInput {
+    height: 30px;
+    padding: 5px 10px;
+    /* margin: 20px; */
+    font-size: 12px;
+    line-height: 1.5;
+    /* 行ボックスの高さを設定 */
+    border-radius: 3px;
+    /* 要素の境界の外側の角を丸める */
+    display: center;
+    width: 30%;
+    color: #555;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    text-indent: 0px;
+    /* ブロック内のテキストの行の前に置く空白 (字下げ) の幅を設定します。 */
+    text-align: start;
+    /* 文字を左寄せにする */
+    cursor: text;
+    /* マウスポインターが要素の上にいるときに表示されるマウスカーソルの種類を設定 */
+}
+
+.buttonWrapper {
+    padding-top: 20px;
+}
+
+.searchBtn {
+    color: #fff;
+    background-color: #337ab7;
+    display: inline-block;
+    padding: 6px 12px;
+    margin-right: 20px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.searchBtn:hover {
+ background-color: #296295;
+}
+
+.canselBtn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-left: 5px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* ========================================
+      商品の設定
+     ======================================== */
+
+.itemWrapper {
+    /* padding-top: 200px; */
+    /* 上はヘッダや検索フォームが来るのでその分空ける */
+    padding-bottom: 80px;
+    background-color: white;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.item {
+    flex: 0 0 320px;
+    /* paddingやborder含むitem全体の横幅を320pxにする */
+    padding: 20px;
+}
+
+.item:hover {
+    opacity: 0.6;
+}
+
+.itemImg {
+    margin: auto;
+    display: block;
+    border-radius: 30px;
+    width: 300px;
+    height: 200px;
+    padding: 0 0 15px 0;
+    cursor: pointer;
+}
+
+.name {
+    color: #B16400;
+    transition: all .3s ease 0s;
+    display: inline-block;
+    font-size: 20px;
+}
+
+.p {
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 20px;
+    font-size: 17px;
+    padding-left: 5%;
+    padding-right: 15%;
+}
+
+.select {
+    text-align: center;
+    width: 120px;
+    display: inline-block;
+    border-radius: 4px;
+    margin-left: 36%;
+    margin-top: 30px;
+}
+
+
+/* ========================================
+      ページネーション
+     ======================================== */
+
+.paginate {
+    text-align: center;
+    width: 500px;
+    margin: 0 auto;
+}
+
+.paginateWapp {
+    font-size: 20px;
+}
+
+.prevNextBtn {
+    height: 40px;
+    width: 40px;
+    padding: 3px;
+    background-color: #fff;
+    border: none;
+    color: #337ab7;
+    cursor: pointer;
+    font-size: 30px;
+    margin: 10px;
+
+}
+
+.befAfBtn {
+    height: 50px;
+    width: 50px;
+    padding: 3px;
+    background-color: #fff;
+    border: 1px solid #337ab7;
+    color: #337ab7;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 25px;
+    margin: 10px;
+
+}
+
+.nowPage {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    padding: 3px;
+    background-color: #337ab7;
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 25px;
+    line-height: 45px;
+    margin: 10px;
+}
+
+.pageDisplay {
+    font-size: 20px;
+    margin-bottom: 50px;
+    margin-top: 10px;
+}

@@ -1,0 +1,159 @@
+.container {
+  padding: 0 15px;
+  margin-top: 55px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F8F8F8;
+  padding: 0 15px;
+  width: 100%;
+  position: fixed;
+  /* ウィンドウを基準に画面に固定 */
+  top: 0;
+  /* 上下の固定位置を上から0pxにする */
+  left: 0;
+  /* 左右の固定位置を左から0pxにする */
+  z-index: 10;
+}
+
+.pcHeaderNav {
+  background-color: #F8F8F8;
+  padding: 0 15px;
+}
+
+.pcHeaderNav ul {
+  display: flex;
+  list-style: none;
+  color: #888888;
+  margin: 0;
+  padding: 0;
+}
+
+.pcHeaderNav ul li {
+  margin: 15px 10px 15px 0;
+  font-size: 14px;
+}
+
+.headerNav {
+  background-color: #F8F8F8;
+  padding: 0 15px;
+  display: none;
+}
+
+.headerNav ul {
+  display: flex;
+  list-style: none;
+  color: #888888;
+  margin: 0;
+  padding: 0;
+}
+
+.headerNav ul li {
+  margin: 15px 10px 15px 0;
+  font-size: 14px;
+}
+
+.show {
+  display: block;
+}
+
+.logout {
+  background-color: inherit;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.hamburgerMenu {
+  display: none;
+}
+
+.menuNav {
+  display: none;
+}
+
+.HeaderCart {
+  border-bottom: transparent;
+  background: linear-gradient(transparent 70%, #FFD700 0%);
+}
+
+.nav {
+  cursor: pointer;
+}
+
+.nowNav {
+  background: linear-gradient(transparent 70%, #FFD700 0%);
+
+}
+
+@media screen and (max-width: 720px) {
+  .hamburgerMenu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 34px;
+    width: 44px;
+    background-color: inherit;
+    margin: 8px 0 8px 0;
+    border: rgb(221, 221, 221) solid 1px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .hamburgerMenu:hover {
+    background-color: rgb(221, 221, 221);
+  }
+
+  .hamburgerMenu span,
+  .hamburgerMenu span::before,
+  .hamburgerMenu span::after {
+    content: "";
+    display: block;
+    height: 2px;
+    width: 25px;
+    border-radius: 3px;
+    background-color: #888888;
+    position: absolute;
+  }
+
+  .hamburgerMenu span::before {
+    bottom: 8px;
+  }
+
+  .hamburgerMenu span::after {
+    top: 8px;
+  }
+
+  .pcHeaderNav {
+    display: none;
+  }
+
+  .menuNav {
+    background-color: rgba(255, 255, 255, .8);
+    position: absolute;
+    top: 50px;
+    left: 100vw;
+    width: 50%;
+    height: calc(100vh - 40px);
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    color: black;
+    font-size: 1.3rem;
+    text-align: center;
+    transition: .5s;
+  }
+
+  .menuNav li {
+    list-style: none;
+    margin-top: 1.5rem;
+  }
+
+  .showNav {
+    left: 50%;
+  }
+
+}

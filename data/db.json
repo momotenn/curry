@@ -1,0 +1,285 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "type": "curry",
+      "name": "カツカレー",
+      "description": "食べると勝負に勝てると言われる勝つカレー。ラクラクカレー定番の１品です",
+      "price": 1490,
+      "imagePath": "/img_curry/1.jpg",
+      "deleted": false
+    },
+    {
+      "id": 2,
+      "type": "curry",
+      "name": "ポークポークカレー・ミート",
+      "description": "グリーンアスパラと相性の良いベーコンにいろどりのフレッシュトマトをトッピングし特製マヨソースでまとめた商品です",
+      "price": 1490,
+      "imagePath": "/img_curry/2.jpg",
+      "deleted": false
+    },
+    {
+      "id": 3,
+      "type": "curry",
+      "name": "牛すじカレー",
+      "description": "トロトロの牛すじとネギの風味が格別な味わいシンプルなカレーです！",
+      "price": 1490,
+      "imagePath": "/img_curry/3.jpg",
+      "deleted": false
+    },
+    {
+      "id": 4,
+      "type": "curry",
+      "name": "味噌カツカレー",
+      "description": "マイルドな味付けのカレーに大きくカットした味噌カツをのせた、バターとチーズの風味が食欲をそそるお子様でも楽しめる商品です",
+      "price": 1900,
+      "imagePath": "/img_curry/4.jpg",
+      "deleted": false
+    },
+    {
+      "id": 5,
+      "type": "curry",
+      "name": "とんかつカレーラーメン",
+      "description": "カレーはライスだけではありません。ラクラクピザが開発したカレーラーメンは絶品の美味しさ！",
+      "price": 1900,
+      "imagePath": "/img_curry/5.jpg",
+      "deleted": false
+    },
+    {
+      "id": 6,
+      "type": "curry",
+      "name": "ヒレカツカレー",
+      "description": "やわらかくあっさりとしたヒレ肉を上質な衣で包み込みました。4種類の濃厚な味わいが一つで楽しめるカレーです",
+      "price": 2700,
+      "imagePath": "/img_curry/6.jpg",
+      "deleted": false
+    },
+    {
+      "id": 7,
+      "type": "curry",
+      "name": "濃厚Gorgeous4",
+      "description": "こだわりのソースで、旨みとコクを堪能！濃厚Gorgeous4とは、動物由来の原材料を使用していないカレーです。ベジタリアンの方にオススメです",
+      "price": 2570,
+      "imagePath": "/img_curry/7.jpg",
+      "deleted": false
+    },
+    {
+      "id": 8,
+      "type": "curry",
+      "name": "カレーうどん",
+      "description": "ラクラクカレー自慢のカレーに魚介のダシ、ローストオニオンのコクが加わった絶妙なスープをお楽しみください",
+      "price": 2160,
+      "imagePath": "/img_curry/8.jpg",
+      "deleted": false
+    },
+    {
+      "id": 9,
+      "type": "curry",
+      "name": "Charity4",
+      "description": "にんにくとトマトの旨みが効いたスパイスカレー。食べると思わず元気が出るラクラクカレーの自信作",
+      "price": 2700,
+      "imagePath": "/img_curry/9.jpg",
+      "deleted": false
+    },
+    {
+      "id": 10,
+      "type": "curry",
+      "name": "ほうれん草のカレードリア",
+      "description": "カレードリアの王道！ホワイトソースとカレーのダブルソースとなす、ほうれん草、チーズのおいしい組み合わせ",
+      "price": 2160,
+      "imagePath": "/img_curry/10.jpg",
+      "deleted": false
+    },
+    {
+      "id": 11,
+      "type": "curry",
+      "name": "Specialドリア4",
+      "description": "ホワイトソースとカレーのダブルソースにハンバーグを合わせました",
+      "price": 2700,
+      "imagePath": "/img_curry/11.jpg",
+      "deleted": false
+    },
+    {
+      "id": 12,
+      "type": "curry",
+      "name": "バラエティー４",
+      "description": "あらびきスライス牛肉とイタリアンチーズを、トマトソースと特製マヨソースの2種類のソースで召し上がって頂く商品です",
+      "price": 2160,
+      "imagePath": "/img_curry/13.jpg",
+      "deleted": false
+    },
+    {
+      "id": 13,
+      "type": "curry",
+      "name": "えびナスカレー",
+      "description": "デミグラスソースでじっくり煮込んだ旨味たっぷりのえびとナスのカレー",
+      "price": 2980,
+      "imagePath": "/img_curry/14.jpg",
+      "deleted": false
+    }
+  ],
+  "orderItems": [
+    {
+      "name": "カツカレー",
+      "price": 1490,
+      "imagePath": "/img_curry/1.jpg",
+      "toppingList": [],
+      "count": 2,
+      "TotalPrice": 2980,
+      "id": 1
+    }
+  ],
+  "order": [],
+  "users": [
+    {
+      "name": "服部 天樹",
+      "email": "aa@gmail.com",
+      "zipcode": "104-0054",
+      "address": "東京都中央区勝どき",
+      "tel": "070-3527-4395",
+      "password": "11111111",
+      "checkPassword": "11111111",
+      "history": [
+        {
+          "name": "カツカレー",
+          "price": 1490,
+          "imagePath": "/img_curry/1.jpg",
+          "toppingList": [
+            {
+              "name": "オニオン",
+              "id": 1,
+              "checked": true
+            },
+            {
+              "name": "チーズ",
+              "id": 2,
+              "checked": true
+            },
+            {
+              "name": "ピーマン",
+              "id": 3,
+              "checked": true
+            }
+          ],
+          "count": 7,
+          "TotalPrice": 14630,
+          "id": 1
+        },
+        {
+          "name": "カツカレー",
+          "price": 1490,
+          "imagePath": "/img_curry/1.jpg",
+          "toppingList": [],
+          "count": 1,
+          "TotalPrice": 1490,
+          "id": 1
+        },
+        {
+          "name": "とんかつカレーラーメン",
+          "price": 1900,
+          "imagePath": "/img_curry/5.jpg",
+          "toppingList": [
+            {
+              "name": "ほうれん草",
+              "id": 5,
+              "checked": true
+            },
+            {
+              "name": "ナス",
+              "id": 6,
+              "checked": true
+            }
+          ],
+          "count": 1,
+          "TotalPrice": 2300,
+          "id": 2
+        },
+        {
+          "name": "カツカレー",
+          "price": 1490,
+          "imagePath": "/img_curry/1.jpg",
+          "toppingList": [],
+          "count": 1,
+          "TotalPrice": 1490,
+          "id": 3
+        },
+        {
+          "name": "ポークポークカレー・ミート",
+          "price": 1490,
+          "imagePath": "/img_curry/2.jpg",
+          "toppingList": [
+            {
+              "name": "ロースハム",
+              "id": 4,
+              "price": 200,
+              "checkedToppingsArray": true
+            },
+            {
+              "name": "ほうれん草",
+              "id": 5,
+              "price": 100,
+              "checkedToppingsArray": true
+            },
+            {
+              "name": "Lサイズ",
+              "id": 9,
+              "price": 300,
+              "checkedToppingsArray": true
+            }
+          ],
+          "count": 1,
+          "TotalPrice": 2090,
+          "id": 1
+        }
+      ],
+      "id": 1
+    }
+  ],
+  "topping": [
+    {
+      "name": "オニオン",
+      "id": 1,
+      "price": 100
+    },
+    {
+      "name": "チーズ",
+      "id": 2,
+      "price": 200
+    },
+    {
+      "name": "ピーマン",
+      "id": 3,
+      "price": 100
+    },
+    {
+      "name": "ロースハム",
+      "id": 4,
+      "price": 200
+    },
+    {
+      "name": "ほうれん草",
+      "id": 5,
+      "price": 100
+    },
+    {
+      "name": "ナス",
+      "id": 6,
+      "price": 100
+    },
+    {
+      "name": "ソーセージ",
+      "id": 7,
+      "price": 200
+    },
+    {
+      "name": "納豆",
+      "id": 8,
+      "price": 100
+    },
+    {
+      "name": "Lサイズ",
+      "id": 9,
+      "price": 300
+    }
+  ]
+}

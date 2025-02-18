@@ -1,0 +1,9 @@
+.custom_bullet {
+  background: white;
+  opacity: 0;
+} 
+
+.custom_bullet_active {
+  background: white;
+  opacity: 1;
+} 
