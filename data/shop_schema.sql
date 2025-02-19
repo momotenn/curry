@@ -26,7 +26,7 @@ CREATE TABLE sizes (
     id SERIAL PRIMARY KEY,
     size VARCHAR(50) NOT NULL,
     description TEXT,
-    extra_price DECIMAL(10, 2) DEFAULT 0.00,
+    extra_price INTEGER DEFAULT 0,
     available BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -102,9 +102,9 @@ VALUES
 
 INSERT INTO sizes (size, description, extra_price, available, created_at, updated_at, deleted_at)
 VALUES
-  ('S', '小サイズ（お子様、少食の方におすすめ）', 0.00, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-  ('M', '中サイズ（標準的な量）', 100.00, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-  ('L', '大サイズ（たっぷり提供）', 200.00, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+  ('S', '小サイズ（お子様、少食の方におすすめ）', 0, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+  ('M', '中サイズ（標準的な量）', 100, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+  ('L', '大サイズ（たっぷり提供）', 200, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
 INSERT INTO items_sizes (item_id, size_id)
 SELECT i.id, s.id
@@ -117,3 +117,9 @@ FROM items i
 CROSS JOIN toppings t;
 
 ALTER TABLE items RENAME COLUMN image_url TO imagePath;
+
+ALTER TABLE items
+ALTER COLUMN price TYPE INTEGER USING price::INTEGER;
+
+ALTER TABLE toppings
+ALTER COLUMN price TYPE INTEGER USING price::INTEGER;
