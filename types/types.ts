@@ -1,4 +1,4 @@
-import { type } from "os";
+import { type } from 'os';
 
 export type User = {
   id: number;
@@ -24,7 +24,7 @@ export type Order = {
   deliveryTime: Date;
   paymentMethod: number;
   user: User;
-//   orderItemList: ;
+  //   orderItemList: ;
 };
 
 export type OrderItem = {
@@ -34,7 +34,7 @@ export type OrderItem = {
   quantity: number;
   size: string;
   item: Item;
-//   orderToppingList: ;
+  //   orderToppingList: ;
 };
 
 export type Item = {
@@ -43,22 +43,21 @@ export type Item = {
   name: string;
   description: string;
   price: number;
-  imagePath: string;
+  imagepath: string;
   delete: boolean;
-//   toppingList: ?;
+  //   toppingList: ?;
 };
 
+export type Topping = {
+  id: number;
+  type: string;
+  name: string;
+  price: number;
+};
 
-export type Topping={
-    id:number,
-    type:string,
-    name:string,
-    price: number
-}
-
-export type OrderTopping={
-    id:number,
-    toppingId:number,
-    orderItemId:number,
-    topping:Topping,
-}
+export type OrderTopping = {
+  id: number;
+  toppingId: number;
+  orderItemId: number;
+  topping: Topping;
+};

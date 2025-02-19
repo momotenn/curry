@@ -14,7 +14,7 @@ CREATE TABLE items (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
-    image_url TEXT,
+    imagePath TEXT,
     available BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -115,3 +115,5 @@ INSERT INTO items_toppings (item_id, topping_id)
 SELECT i.id, t.id
 FROM items i
 CROSS JOIN toppings t;
+
+ALTER TABLE items RENAME COLUMN image_url TO imagePath;
