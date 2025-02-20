@@ -13,7 +13,7 @@ CREATE TABLE items (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
+    price INTEGER NOT NULL,
     imagePath TEXT,
     available BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,7 +37,7 @@ CREATE TABLE sizes (
 CREATE TABLE toppings (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
+    price INTEGER NOT NULL,
     available BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -72,7 +72,8 @@ CREATE TRIGGER set_timestamp BEFORE UPDATE ON items FOR EACH ROW EXECUTE FUNCTIO
 CREATE TRIGGER set_timestamp BEFORE UPDATE ON sizes FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 CREATE TRIGGER set_timestamp BEFORE UPDATE ON toppings FOR EACH ROW EXECUTE FUNCTION update_timestamp();
 
-INSERT INTO items (id, name, description, price, image_url, available)
+-- INSERT 文
+INSERT INTO items (id, name, description, price, imagePath, available)
 VALUES
   (1, 'カツカレー', '食べると勝負に勝てると言われる勝つカレー。ラクラクカレー定番の１品です', 1490, '/img_curry/1.jpg', TRUE),
   (2, 'ポークポークカレー・ミート', 'グリーンアスパラと相性の良いベーコンにいろどりのフレッシュトマトをトッピングし特製マヨソースでまとめた商品です', 1490, '/img_curry/2.jpg', TRUE),
@@ -97,14 +98,13 @@ VALUES
   (5, 'ほうれん草', 100, TRUE),
   (6, 'ナス', 100, TRUE),
   (7, 'ソーセージ', 200, TRUE),
-  (8, '納豆', 100, TRUE),
-  (9, 'Lサイズ', 300, TRUE);
+  (8, '納豆', 100, TRUE);
 
 INSERT INTO sizes (size, description, extra_price, available, created_at, updated_at, deleted_at)
 VALUES
   ('S', '小サイズ（お子様、少食の方におすすめ）', 0, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
   ('M', '中サイズ（標準的な量）', 100, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-  ('L', '大サイズ（たっぷり提供）', 200, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+  ('L', '大サイズ（たっぷり提供）', 300, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
 INSERT INTO items_sizes (item_id, size_id)
 SELECT i.id, s.id
@@ -115,11 +115,3 @@ INSERT INTO items_toppings (item_id, topping_id)
 SELECT i.id, t.id
 FROM items i
 CROSS JOIN toppings t;
-
-ALTER TABLE items RENAME COLUMN image_url TO imagePath;
-
-ALTER TABLE items
-ALTER COLUMN price TYPE INTEGER USING price::INTEGER;
-
-ALTER TABLE toppings
-ALTER COLUMN price TYPE INTEGER USING price::INTEGER;

@@ -3,7 +3,7 @@ import { Item } from '../../types/types';
 
 export function ItemCard({ id, name, price, imagepath }: Item) {
   return (
-    <Link href={`/items/${id}`} legacyBehavior>
+    <Link href={`/posts/${id}`} legacyBehavior>
       <div className="overflow-hidden shadow-lg rounded-lg h-90 w-60 md:w-80 cursor-pointer m-auto">
         <a href="#" className="w-full block h-full">
           <img

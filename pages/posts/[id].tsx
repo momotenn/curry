@@ -43,6 +43,20 @@ export async function getStaticProps({
     params.id,
   ]);
   const jsonData = res.rows[0] || null;
+
+  // Date オブジェクトを文字列に変換
+  if (jsonData) {
+    jsonData.created_at = jsonData.created_at
+      ? jsonData.created_at.toISOString()
+      : null;
+    jsonData.updated_at = jsonData.updated_at
+      ? jsonData.updated_at.toISOString()
+      : null;
+    jsonData.deleted_at = jsonData.deleted_at
+      ? jsonData.deleted_at.toISOString()
+      : null;
+  }
+
   await pool.end();
 
   return {
