@@ -22,16 +22,14 @@ export default async function handler(
 
   // URL パラメータから id を取得
   const { id } = req.query;
-  console.log('取得するID:', id); // 受け取ったパラメータを確認
 
   try {
     const result = await pool.query(
       'SELECT * FROM items WHERE id = $1',
       [id]
     );
-    console.log('クエリ結果:', result.rows); // クエリ結果を確認
+
     if (result.rows.length === 0) {
-      console.log('アイテムが見つかりませんでした');
       return res.status(404).json({ message: 'Item not found' });
     }
     res.status(200).json(result.rows[0]);
