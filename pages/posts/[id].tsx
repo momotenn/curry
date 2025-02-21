@@ -71,6 +71,11 @@ export default function Details({ jsonData }: { jsonData: Item }) {
   //toppingを拾ってきてCSRで表示
   const { data, error } = useSWR('/api/toppings', fetcher);
 
+  const { data: sizesData, error: sizesError } = useSWR(
+    '/api/sizes',
+    fetcher
+  );
+
   //初期値ではトッピングは何も選ばれていない状態
 
   const initialCheckedToppingsArray: any[] = [
@@ -94,6 +99,11 @@ export default function Details({ jsonData }: { jsonData: Item }) {
 
   const [checkedToppingsArray, setCheckedToppingsArray] =
     useState<any>(initialCheckedToppingsArray);
+
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    null
+  );
+
   //注文個数のstate
   const [count, setCount] = useState(1);
   //追加されたtoppingのstate
@@ -110,14 +120,24 @@ export default function Details({ jsonData }: { jsonData: Item }) {
     setShow(true);
   }
 
-  let totalPrice = 0;
+  let totalToppingPrice = 0;
   checkedToppingsArray.forEach(
     (checkedTopping: boolean, index: number) => {
       if (checkedTopping) {
-        return (totalPrice += data[index].price);
+        return (totalToppingPrice += data[index].price);
       } else return;
     }
   );
+
+  let selectedSizeExtraPrice = 0;
+  if (sizesData && selectedSize) {
+    const found = sizesData.find(
+      (size: any) => size.id.toString() === selectedSize
+    );
+    if (found) {
+      selectedSizeExtraPrice = parseInt(found.extra_price, 10);
+    }
+  }
 
   function onClickDec() {
     //toppingにcheckedToppingsArrayのtrue, falseを割り当てる
@@ -136,8 +156,8 @@ export default function Details({ jsonData }: { jsonData: Item }) {
     setShow(false);
   }
 
-  if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
+  if (error || sizesError) return <div>Failed to load</div>;
+  if (!data || !sizesData) return <div>Loading...</div>;
 
   const arr = [];
   for (let i = 1; i < 13; i++) {
@@ -165,8 +185,11 @@ export default function Details({ jsonData }: { jsonData: Item }) {
         price: price,
         imagePath: imagepath,
         toppingList: toppingList,
+        size: selectedSize,
         count: Number(count),
-        TotalPrice: (price + totalPrice) * count,
+        TotalPrice:
+          (price + selectedSizeExtraPrice + totalToppingPrice) *
+          count,
       }),
     });
   };
@@ -194,6 +217,34 @@ export default function Details({ jsonData }: { jsonData: Item }) {
         </div>
         <div className={detailStyle.option}>
           <h3 className={detailStyle.optionTitle}>
+            サイズ選択:
+            <br />
+            S:0円 M:100円 L:300円
+          </h3>
+          <div className={detailStyle.optionTag}>
+            {sizesData.map((size: any) => (
+              <div key={size.id}>
+                {/* チェックボックス（単一選択：選択されたサイズのみ true にする） */}
+                <input
+                  type="checkbox"
+                  id={`size-${size.id}`}
+                  name="size"
+                  checked={selectedSize === size.id.toString()}
+                  onChange={() => {
+                    // すでに選択されている場合は解除、未選択の場合は選択
+                    if (selectedSize === size.id.toString()) {
+                      setSelectedSize(null);
+                    } else {
+                      setSelectedSize(size.id.toString());
+                    }
+                  }}
+                />
+                <label htmlFor={`size-${size.id}`}>{size.size}</label>
+              </div>
+            ))}
+          </div>
+
+          {/* <h3 className={detailStyle.optionTitle}>
             ライス大盛り: 300円
           </h3>
           <div className={detailStyle.optionTag}>
@@ -215,7 +266,7 @@ export default function Details({ jsonData }: { jsonData: Item }) {
                 );
               })
             }
-          </div>
+          </div> */}
           <h3 className={detailStyle.optionTitle}>
             トッピング: 1つにつき100円（税抜）
           </h3>
@@ -279,10 +330,10 @@ export default function Details({ jsonData }: { jsonData: Item }) {
         </div>
         <p className={detailStyle.total}>
           この商品金額:{' '}
-          {String((price + totalPrice) * count).replace(
-            /(\d)(?=(\d\d\d)+(?!\d))/g,
-            '$1,'
-          )}
+          {String(
+            (price + selectedSizeExtraPrice + totalToppingPrice) *
+              count
+          ).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}
           円（税抜）
         </p>
         {show === true ? (
