@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+// バックエンドAPIのURLを環境変数や設定で管理する例
+const BACKEND_BASE_URL =
+  process.env.BACKEND_URL || 'http://localhost:4000';
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,40 +17,46 @@ export default async function handler(
   }
 
   try {
-    // クエリパラメータからページ番号、表示件数、ソート情報を取得
+    // クエリパラメータを取得 (ページングやソート情報)
     const {
       _page = '1',
       _limit = '5',
       _sort = 'price',
       _order = 'asc',
     } = req.query;
-    const page = parseInt(_page as string, 10);
-    const limit = parseInt(_limit as string, 10);
-    const offset = (page - 1) * limit;
 
-    // 安全のためソート可能なカラムは限定
-    const validSortColumns = ['id', 'name', 'price'];
-    const sortColumn = validSortColumns.includes(_sort as string)
-      ? (_sort as string)
-      : 'price';
-    const order =
-      (_order as string).toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+    // バックエンド API に渡すクエリパラメータを組み立て
+    const queryParams = new URLSearchParams({
+      _page: _page.toString(),
+      _limit: _limit.toString(),
+      _sort: _sort.toString(),
+      _order: _order.toString(),
+    });
 
-    // 全件数を取得
-    const totalResult = await pool.query(
-      'SELECT COUNT(*) FROM items'
+    // バックエンド API を呼び出し
+    const response = await fetch(
+      `${BACKEND_BASE_URL}/items?${queryParams}`
     );
-    const totalCount = parseInt(totalResult.rows[0].count, 10);
+    if (!response.ok) {
+      // バックエンド側がエラーを返した場合
+      const text = await response.text();
+      throw new Error(`Failed to fetch: ${response.status} ${text}`);
+    }
 
-    // items テーブルから該当ページ分のデータを取得
-    const queryText = `SELECT * FROM items ORDER BY ${sortColumn} ${order} LIMIT $1 OFFSET $2`;
-    const itemsResult = await pool.query(queryText, [limit, offset]);
+    // バックエンドからのレスポンスヘッダーを取得 (例: X-Total-Count)
+    const totalCount = response.headers.get('X-Total-Count');
+    if (totalCount) {
+      // Next.js のレスポンスにも同じヘッダーを付与
+      res.setHeader('X-Total-Count', totalCount);
+    }
 
-    // ヘッダーに総件数をセット
-    res.setHeader('X-Total-Count', totalCount.toString());
-    res.status(200).json(itemsResult.rows);
+    // JSON データを取得
+    const data = await response.json();
+
+    // 取得したデータをそのままクライアントに返す
+    res.status(200).json(data);
   } catch (error) {
-    console.error('Error fetching items:', error);
+    console.error('Error fetching items from backend:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
