@@ -1,7 +1,7 @@
 import { Pool } from 'pg';
 import { privateDecrypt } from 'crypto';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { fetcher } from '../../component/templates/jsonitems';
 import { Layout } from '../../component/layout';
@@ -10,23 +10,32 @@ import { Item, Topping } from '../../types/types';
 import detailStyle from '../../component/details.module.css';
 import Head from 'next/head';
 import { MainBtn } from '../../component/atoms/MainBtn';
+import { useRouter } from 'next/router';
 
 //posts/1などのpathを用意する
 export async function getStaticPaths() {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
-  // items テーブルから id のみ取得
-  const res = await pool.query('SELECT id FROM items');
-  const paths = res.rows.map((row) => ({
-    params: { id: row.id.toString() },
-  }));
-  await pool.end();
-  return {
-    paths,
-    //idがない場合は404になるようにfalse
-    fallback: false,
-  };
+  try {
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+    // items テーブルから id のみ取得
+    const res = await pool.query('SELECT id FROM items');
+    console.log('✅ DB接続成功 paths:', res.rows);
+
+    const paths = res.rows.map((row) => ({
+      params: { id: row.id.toString() },
+    }));
+    console.log('paths', paths);
+    await pool.end();
+    return {
+      paths,
+      //idがない場合は404になるようにfalse
+      fallback: false,
+    };
+  } catch (error) {
+    console.error('❌ getStaticPathsでDB接続失敗:', error);
+    throw error;
+  }
 }
 
 //上のpathから拾ってきたデータをpropsとして下のコンポーネントに渡す。
@@ -35,70 +44,65 @@ export async function getStaticProps({
 }: {
   params: { id: string };
 }) {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
-  // id でアイテムを検索（$1 でパラメータバインディング）
-  const res = await pool.query('SELECT * FROM items WHERE id = $1', [
-    params.id,
-  ]);
-  const jsonData = res.rows[0] || null;
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  // Date オブジェクトを文字列に変換
-  if (jsonData) {
-    jsonData.created_at = jsonData.created_at
-      ? jsonData.created_at.toISOString()
-      : null;
-    jsonData.updated_at = jsonData.updated_at
-      ? jsonData.updated_at.toISOString()
-      : null;
-    jsonData.deleted_at = jsonData.deleted_at
-      ? jsonData.deleted_at.toISOString()
-      : null;
+    // Express 側にリクエスト（サイズやトッピングIDは初期状態なので仮に固定値で渡してOK）
+    const res = await fetch(
+      `${backendUrl}/itemDetail/${params.id}?size=S&toppingId=`
+    );
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch data');
+    }
+
+    const { item: jsonData } = await res.json();
+
+    if (jsonData.created_at instanceof Date) {
+      jsonData.created_at = jsonData.created_at.toISOString();
+    }
+
+    if (jsonData.updated_at instanceof Date) {
+      jsonData.updated_at = jsonData.updated_at.toISOString();
+    }
+
+    if (jsonData.deleted_at instanceof Date) {
+      jsonData.deleted_at =
+        jsonData.deleted_at?.toISOString() || null;
+    }
+
+    console.log('📝jsonData', jsonData);
+    return {
+      props: {
+        jsonData,
+      },
+      revalidate: 10, // ISRを使う場合
+    };
+  } catch (error) {
+    console.error('❌Error fetching item:', error);
+    return {
+      notFound: true,
+    };
   }
-
-  await pool.end();
-
-  return {
-    props: {
-      jsonData,
-    },
-    revalidate: 10,
-  };
 }
 
 export default function Details({ jsonData }: { jsonData: Item }) {
   //toppingを拾ってきてCSRで表示
-  const { data, error } = useSWR('/api/toppings', fetcher);
 
-  const { data: sizesData, error: sizesError } = useSWR(
-    '/api/sizes',
-    fetcher
-  );
+  const router = useRouter();
+
+  const { id } = router.query;
+  // console.log('😃id', id);
+
+  const { data: toppings, error } = useSWR('/api/toppings', fetcher);
+
+  const { data: sizes } = useSWR('/api/sizes', fetcher);
 
   //初期値ではトッピングは何も選ばれていない状態
 
-  const initialCheckedToppingsArray: any[] = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
-
-  const priceArr = [];
-  if (data) {
-    data.map((el: any) => {
-      priceArr.push(el.price);
-    });
-  }
-
-  const [checkedToppingsArray, setCheckedToppingsArray] =
-    useState<any>(initialCheckedToppingsArray);
+  const [checkedToppingsArray, setCheckedToppingsArray] = useState<
+    boolean[]
+  >(Array(toppings?.length).fill(false));
 
   const [selectedSize, setSelectedSize] = useState<string | null>(
     null
@@ -109,29 +113,69 @@ export default function Details({ jsonData }: { jsonData: Item }) {
   //追加されたtoppingのstate
   const [toppingList, setToppingList] = useState([]);
 
-  const [show, setShow] = useState(true);
+  const [itemDetail, setItemDetail] = useState<any>(null);
+
+  useEffect(() => {
+    if (!id || !selectedSize || !toppings) {
+      console.log('🧪 useEffect 条件未達成:', {
+        id,
+        typeofId: typeof id,
+        selectedSize,
+        toppings,
+      });
+      return;
+    }
+    console.log('🧪 useEffect 発火:', { id, selectedSize, toppings });
+
+    const selectedToppingIds = toppings
+      .map((t: Topping, idx: number) =>
+        checkedToppingsArray[idx] ? t.id : null
+      )
+      .filter((id: number | null) => id !== null);
+
+    const fetchDetail = async () => {
+      const toppingParam = selectedToppingIds.join(',');
+      const res = await fetch(
+        `/api/items/${id}?size=${selectedSize}&toppingId=${toppingParam}`
+      );
+      const text = await res.text();
+
+      try {
+        const result = JSON.parse(text); // ここでパースできなければ catch される
+        console.log('🟢 正常に受け取ったデータ:', result);
+        setItemDetail(result.item);
+      } catch (err) {
+        console.error('❌ JSONパース失敗。レスポンス:', text);
+      }
+    };
+
+    fetchDetail();
+
+    fetch('/api/test');
+  }, [id, selectedSize, checkedToppingsArray, toppings]);
 
   //クリックされたときにtrueとfalseが入れ替わる
-  function onChangeCheck(index: number) {
+  if (error) return <div>Failed to load</div>;
+  if (!toppings || !sizes) return <div>Loading...</div>;
+
+  const onChangeCheck = (index: number) => {
     const newCheck = [...checkedToppingsArray];
-    //splice関数 = 配列の一部を入れ替える
-    newCheck.splice(index, 1, !newCheck[index]);
+    newCheck[index] = !newCheck[index];
     setCheckedToppingsArray(newCheck);
-    setShow(true);
-  }
+  };
 
   let totalToppingPrice = 0;
   checkedToppingsArray.forEach(
     (checkedTopping: boolean, index: number) => {
       if (checkedTopping) {
-        return (totalToppingPrice += data[index].price);
+        return (totalToppingPrice += toppings[index].price);
       } else return;
     }
   );
 
   let selectedSizeExtraPrice = 0;
-  if (sizesData && selectedSize) {
-    const found = sizesData.find(
+  if (sizes && selectedSize) {
+    const found = sizes.find(
       (size: any) => size.id.toString() === selectedSize
     );
     if (found) {
@@ -141,23 +185,20 @@ export default function Details({ jsonData }: { jsonData: Item }) {
 
   function onClickDec() {
     //toppingにcheckedToppingsArrayのtrue, falseを割り当てる
-    data.map(
+    toppings.map(
       (el: any, index: number) =>
         (el.checkedToppingsArray = checkedToppingsArray[index])
     );
 
     //toppingがtrueになっているものだけを集める
     let newToppingList = [...toppingList];
-    newToppingList = data.filter(
+    newToppingList = toppings.filter(
       (el: any) => el.checkedToppingsArray == true
     );
     setToppingList(newToppingList);
 
-    setShow(false);
+    setItemDetail(false);
   }
-
-  if (error || sizesError) return <div>Failed to load</div>;
-  if (!data || !sizesData) return <div>Loading...</div>;
 
   const arr = [];
   for (let i = 1; i < 13; i++) {
@@ -166,11 +207,11 @@ export default function Details({ jsonData }: { jsonData: Item }) {
 
   //注文個数を代入
   const onChangeCount = (event: any) => {
-    setShow(true);
+    setItemDetail(true);
     setCount(event.target.value);
   };
 
-  const { id, name, imagepath, description, price } = jsonData;
+  const { jsonId, name, imagepath, description, price } = jsonData;
   const onClickCart = () => {
     // //@ts-ignore
     //     const cookieName = document.cookie.split('; ')
@@ -222,7 +263,7 @@ export default function Details({ jsonData }: { jsonData: Item }) {
             S:0円 M:100円 L:300円
           </h3>
           <div className={detailStyle.optionTag}>
-            {sizesData.map((size: any) => (
+            {sizes.map((size: any) => (
               <div key={size.id}>
                 {/* チェックボックス（単一選択：選択されたサイズのみ true にする） */}
                 <input
@@ -273,21 +314,23 @@ export default function Details({ jsonData }: { jsonData: Item }) {
           <div className={detailStyle.optionTag}>
             {
               //toppingのデータを一つ一つ表示
-              data.map(({ name, price, id }: Topping, index: any) => {
-                if (price !== 100) return;
-                return (
-                  <>
-                    <input
-                      type="checkbox"
-                      id={name}
-                      name={name}
-                      checked={checkedToppingsArray[index]}
-                      onChange={() => onChangeCheck(index)}
-                    />
-                    <label htmlFor={name}>{name}</label>
-                  </>
-                );
-              })
+              toppings.map(
+                ({ name, price, id }: Topping, index: any) => {
+                  if (price !== 100) return;
+                  return (
+                    <>
+                      <input
+                        type="checkbox"
+                        id={name}
+                        name={name}
+                        checked={!!checkedToppingsArray[index]}
+                        onChange={() => onChangeCheck(index)}
+                      />
+                      <label htmlFor={name}>{name}</label>
+                    </>
+                  );
+                }
+              )
             }
           </div>
           <h3 className={detailStyle.optionTitle}>
@@ -296,21 +339,23 @@ export default function Details({ jsonData }: { jsonData: Item }) {
           <div className={detailStyle.optionTag}>
             {
               //toppingのデータを一つ一つ表示
-              data.map(({ name, price, id }: Topping, index: any) => {
-                if (price !== 200) return;
-                return (
-                  <>
-                    <input
-                      type="checkbox"
-                      id={name}
-                      name={name}
-                      checked={checkedToppingsArray[index]}
-                      onChange={() => onChangeCheck(index)}
-                    />
-                    <label htmlFor={name}>{name}</label>
-                  </>
-                );
-              })
+              toppings.map(
+                ({ name, price, id }: Topping, index: any) => {
+                  if (price !== 200) return;
+                  return (
+                    <>
+                      <input
+                        type="checkbox"
+                        id={name}
+                        name={name}
+                        checked={checkedToppingsArray[index]}
+                        onChange={() => onChangeCheck(index)}
+                      />
+                      <label htmlFor={name}>{name}</label>
+                    </>
+                  );
+                }
+              )
             }
           </div>
           <h3 className={detailStyle.quantity}>数量:</h3>
@@ -336,7 +381,7 @@ export default function Details({ jsonData }: { jsonData: Item }) {
           ).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}
           円（税抜）
         </p>
-        {show === true ? (
+        {itemDetail === true ? (
           <MainBtn
             className={detailStyle.Btn}
             onClick={(): any => onClickDec()}

@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // バックエンドAPIのURLを環境変数や設定で管理する例
-const BACKEND_BASE_URL =
-  process.env.BACKEND_URL || 'http://localhost:4000';
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+console.log('BACKEND_BASE_URL:', BACKEND_BASE_URL);
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,25 +17,18 @@ export default async function handler(
   }
 
   try {
-    // クエリパラメータを取得 (ページングやソート情報)
-    const {
-      _page = '1',
-      _limit = '5',
-      _sort = 'price',
-      _order = 'asc',
-    } = req.query;
-
-    // バックエンド API に渡すクエリパラメータを組み立て
-    const queryParams = new URLSearchParams({
-      _page: _page.toString(),
-      _limit: _limit.toString(),
-      _sort: _sort.toString(),
-      _order: _order.toString(),
-    });
+    const queryParams = new URLSearchParams(
+      req.query as Record<string, string>
+    );
 
     // バックエンド API を呼び出し
     const response = await fetch(
-      `${BACKEND_BASE_URL}/items?${queryParams}`
+      `${BACKEND_BASE_URL}/items?${queryParams}`,
+      {
+        headers: {
+          Authorization: 'Basic ' + btoa('admin:supersecret'),
+        },
+      }
     );
     if (!response.ok) {
       // バックエンド側がエラーを返した場合
@@ -52,6 +45,8 @@ export default async function handler(
 
     // JSON データを取得
     const data = await response.json();
+
+    console.log('データ:', data);
 
     // 取得したデータをそのままクライアントに返す
     res.status(200).json(data);

@@ -1,18 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Pool } from 'pg';
 
-// プールの作成（環境変数 DATABASE_URL に接続情報を設定してください）
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log('API /api/items/[id] にリクエストが来ました。'); // リクエスト確認
+  console.log('✅ Next.js API にリクエストが届いた！');
+  // res.status(200).json({ message: 'OK' });
 
-  // GET メソッド以外は拒否
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     return res
@@ -20,21 +16,44 @@ export default async function handler(
       .json({ message: `Method ${req.method} not allowed` });
   }
 
-  // URL パラメータから id を取得
-  const { id } = req.query;
-
   try {
-    const result = await pool.query(
-      'SELECT * FROM items WHERE id = $1',
-      [id]
-    );
+    // idはパスパラメータから取得
+    const { id } = req.query;
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Item not found' });
+    // クエリパラメータ（sizeやtoppingId）を使ってURLSearchParamsを作成
+    const queryParams = new URLSearchParams();
+
+    if (typeof req.query.size === 'string') {
+      queryParams.append('size', req.query.size);
     }
-    res.status(200).json(result.rows[0]);
+
+    if (typeof req.query.toppingId === 'string') {
+      queryParams.append('toppingId', req.query.toppingId);
+    }
+
+    const url = `${BACKEND_BASE_URL}/itemDetail/${id}?${queryParams.toString()}`;
+    console.log('🔗 Fetching URL:', url);
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: 'Basic ' + btoa('admin:supersecret'),
+      },
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('❌ fetch失敗内容:', text);
+      throw new Error(`Failed to fetch: ${response.status} ${text}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ 取得データ:', data);
+
+    res.status(200).json(data);
+
+    console.log('📝データ', data);
   } catch (error) {
-    console.error('Error fetching item:', error);
+    console.error('❌ Error fetching item:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
