@@ -1,9 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,10 +16,15 @@ export default async function handler(
 
   try {
     // 利用可能なサイズを昇順で取得
-    const result = await pool.query(
-      'SELECT * FROM sizes WHERE available = TRUE ORDER BY id ASC'
-    );
-    res.status(200).json(result.rows);
+    const response = await fetch(`${BACKEND_BASE_URL}/sizes`, {
+      headers: {
+        Authorization: 'Basic ' + btoa('admin:supersecret'),
+      },
+    });
+
+    const sizes = await response.json();
+    res.status(200).json(sizes);
+    console.log('📝サイズ', sizes);
   } catch (error) {
     console.error('Error fetching sizes:', error);
     res.status(500).json({ message: 'Internal Server Error' });

@@ -1,9 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,10 +15,14 @@ export default async function handler(
   }
 
   try {
-    const result = await pool.query(
-      'SELECT * FROM toppings ORDER BY id ASC'
-    );
-    res.status(200).json(result.rows);
+    const response = await fetch(`${BACKEND_BASE_URL}/toppings`, {
+      headers: {
+        Authorization: 'Basic ' + btoa('admin:supersecret'),
+      },
+    });
+    const toppings = await response.json();
+    res.status(200).json(toppings);
+    console.log('📝トッピング', toppings);
   } catch (error) {
     console.error('Error fetching toppings:', error);
     res.status(500).json({ message: 'Internal Server Error' });
