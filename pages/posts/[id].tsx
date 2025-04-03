@@ -45,12 +45,11 @@ export async function getStaticProps({
   params: { id: string };
 }) {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const host = process.env.NEXT_PUBLIC_HOST;
 
-    // Express 側にリクエスト（サイズやトッピングIDは初期状態なので仮に固定値で渡してOK）
-    const res = await fetch(
-      `${backendUrl}/itemDetail/${params.id}?size=S&toppingId=`
-    );
+    const url = `${host}/api/items/${params.id}?size=S&toppingId=`;
+
+    const res = await fetch(url);
 
     if (!res.ok) {
       throw new Error('Failed to fetch data');
