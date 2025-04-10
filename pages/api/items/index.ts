@@ -46,7 +46,7 @@ export default async function handler(
     // JSON データを取得
     const data = await response.json();
 
-    console.log('データ:', data);
+    // console.log('データ:', data);
 
     // 取得したデータをそのままクライアントに返す
     res.status(200).json(data);
