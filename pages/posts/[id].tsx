@@ -11,6 +11,7 @@ import detailStyle from '../../component/details.module.css';
 import Head from 'next/head';
 import { MainBtn } from '../../component/atoms/MainBtn';
 import { useRouter } from 'next/router';
+import { CartItem } from '../../types/cart';
 
 //posts/1などのpathを用意する
 export async function getStaticPaths() {
@@ -101,7 +102,7 @@ export default function Details({ jsonData }: { jsonData: Item }) {
 
   const [checkedToppingsArray, setCheckedToppingsArray] = useState<
     boolean[]
-  >(Array(toppings?.length).fill(false));
+  >([]);
 
   const [selectedSize, setSelectedSize] = useState<string | null>(
     null
@@ -113,6 +114,12 @@ export default function Details({ jsonData }: { jsonData: Item }) {
   const [toppingList, setToppingList] = useState([]);
 
   const [itemDetail, setItemDetail] = useState<any>(null);
+
+  useEffect(() => {
+    if (toppings) {
+      setCheckedToppingsArray(Array(toppings.length).fill(false));
+    }
+  }, [toppings]);
 
   useEffect(() => {
     if (!id || !selectedSize || !toppings) {
@@ -178,26 +185,26 @@ export default function Details({ jsonData }: { jsonData: Item }) {
       (size: any) => size.id.toString() === selectedSize
     );
     if (found) {
-      selectedSizeExtraPrice = parseInt(found.extra_price, 10);
+      selectedSizeExtraPrice = Number(found.extra_price);
     }
   }
 
-  function onClickDec() {
-    //toppingにcheckedToppingsArrayのtrue, falseを割り当てる
-    toppings.map(
-      (el: any, index: number) =>
-        (el.checkedToppingsArray = checkedToppingsArray[index])
-    );
+  // function onClickDec() {
+  //   //toppingにcheckedToppingsArrayのtrue, falseを割り当てる
+  //   toppings.map(
+  //     (el: any, index: number) =>
+  //       (el.checkedToppingsArray = checkedToppingsArray[index])
+  //   );
 
-    //toppingがtrueになっているものだけを集める
-    let newToppingList = [...toppingList];
-    newToppingList = toppings.filter(
-      (el: any) => el.checkedToppingsArray == true
-    );
-    setToppingList(newToppingList);
+  //   //toppingがtrueになっているものだけを集める
+  //   let newToppingList = [...toppingList];
+  //   newToppingList = toppings.filter(
+  //     (el: any) => el.checkedToppingsArray == true
+  //   );
+  //   setToppingList(newToppingList);
 
-    setItemDetail(false);
-  }
+  //   setItemDetail(true);
+  // }
 
   const arr = [];
   for (let i = 1; i < 13; i++) {
@@ -206,32 +213,106 @@ export default function Details({ jsonData }: { jsonData: Item }) {
 
   //注文個数を代入
   const onChangeCount = (event: any) => {
-    setItemDetail(true);
     setCount(event.target.value);
   };
 
   const { jsonId, name, imagepath, description, price } = jsonData;
-  const onClickCart = () => {
-    // //@ts-ignore
-    //     const cookieName = document.cookie.split('; ')
-    //     .find(row=>row.startsWith('name')).split('=')[1];
+  const handleAddToCart = async (e: React.FormEvent) => {
+    //確定ボタンが押されたときに、カートに追加する
 
-    //dbJsonのorderItemsに反映させる
-    fetch('/api/orderItems', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: name,
-        price: price,
+    if (!selectedSize) {
+      alert('サイズを選択してください');
+      return;
+    }
+
+    const toppingIds = toppings
+      .map((t: Topping, i: number) =>
+        checkedToppingsArray[i] ? t.id : null
+      )
+      .filter((id: number | null): id is number => id !== null);
+
+    let token = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('token='))
+      ?.split('=')[1];
+
+    console.log('🍪 Cookie token raw:', document.cookie);
+
+    if (token?.startsWith('Bearer ')) {
+      token = token.replace(/^Bearer\s/, '');
+    }
+    console.log('➡️ 最終的に送る token:', token);
+
+    if (token) {
+      const res = await fetch('/api/carts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          itemId: id,
+          sizeId: Number(selectedSize),
+          quantity: Number(count),
+          toppingIds: toppingIds,
+        }),
+        credentials: 'include',
+      });
+      const data = await res.json();
+      console.log('📃data', data);
+
+      if (res.ok) {
+        console.log('✅カートに追加成功');
+        router.push('/order');
+      } else {
+        console.log('❌カートに追加失敗', data.message);
+      }
+    } else {
+      // 未ログイン → ローカルストレージに保存
+
+      const selectedToppings = toppings.filter(
+        (t: Topping, i: number) => checkedToppingsArray[i]
+      );
+
+      const selectedSizeName = sizes.find(
+        (size: any) => size.id.toString() === selectedSize
+      )?.size;
+
+      const itemData: CartItem = {
+        id: jsonId, // 商品ID
+        name,
+        price,
         imagePath: imagepath,
-        toppingList: toppingList,
-        size: selectedSize,
-        count: Number(count),
+        quantity: count,
+        size: selectedSizeName,
+        size_price: selectedSizeExtraPrice,
+        // 選択したトッピングを同じ構造に整形
+        toppingList: selectedToppings.map((topping: Topping) => ({
+          id: topping.id,
+          name: topping.name,
+          price: topping.price,
+          checked: true,
+        })),
+        // 合計金額＝ (基本価格 + サイズ追加料金) * 個数 + 選択トッピングの合計
         TotalPrice:
-          (price + selectedSizeExtraPrice + totalToppingPrice) *
-          count,
-      }),
-    });
+          (price + selectedSizeExtraPrice) * count +
+          selectedToppings.reduce(
+            (sum: number, topping: Topping) => sum + topping.price,
+            0
+          ),
+      };
+      const currentCart = JSON.parse(
+        localStorage.getItem('guest_cart') || '[]'
+      );
+      localStorage.setItem(
+        'guest_cart',
+        JSON.stringify([...currentCart, itemData])
+      );
+      alert(
+        '未ログインのためローカルストレージにカートを保存しました。'
+      );
+      router.push('/order');
+    }
   };
 
   return (
@@ -240,51 +321,54 @@ export default function Details({ jsonData }: { jsonData: Item }) {
         <title>{name}</title>
       </Head>
       <Layout show={true}>
-        {/* ぱんくずリスト */}
-        <Link href="/">商品一覧</Link>
-        &nbsp; &gt; &nbsp;
-        <span>{name}</span>
-        <div className={detailStyle.item}>
-          <img
-            src={imagepath}
-            width={300}
-            className={detailStyle.itemImg}
-          />
-          <div className={detailStyle.itemDetail}>
-            <h2>{name}</h2>
-            <p>{description}</p>
+        <div>
+          {/* ぱんくずリスト */}
+          <Link href="/">商品一覧</Link>
+          &nbsp; &gt; &nbsp;
+          <span>{name}</span>
+          <div className={detailStyle.item}>
+            <img
+              src={imagepath}
+              width={300}
+              className={detailStyle.itemImg}
+            />
+            <div className={detailStyle.itemDetail}>
+              <h2>{name}</h2>
+              <p>{description}</p>
+            </div>
           </div>
-        </div>
-        <div className={detailStyle.option}>
-          <h3 className={detailStyle.optionTitle}>
-            サイズ選択:
-            <br />
-            S:0円 M:100円 L:300円
-          </h3>
-          <div className={detailStyle.optionTag}>
-            {sizes.map((size: any) => (
-              <div key={size.id}>
-                {/* チェックボックス（単一選択：選択されたサイズのみ true にする） */}
-                <input
-                  type="checkbox"
-                  id={`size-${size.id}`}
-                  name="size"
-                  checked={selectedSize === size.id.toString()}
-                  onChange={() => {
-                    // すでに選択されている場合は解除、未選択の場合は選択
-                    if (selectedSize === size.id.toString()) {
-                      setSelectedSize(null);
-                    } else {
-                      setSelectedSize(size.id.toString());
-                    }
-                  }}
-                />
-                <label htmlFor={`size-${size.id}`}>{size.size}</label>
-              </div>
-            ))}
-          </div>
+          <div className={detailStyle.option}>
+            <h3 className={detailStyle.optionTitle}>
+              サイズ選択:
+              <br />
+              S:0円 M:100円 L:300円
+            </h3>
+            <div className={detailStyle.optionTag}>
+              {sizes.map((size: any) => (
+                <div key={size.id}>
+                  {/* チェックボックス（単一選択：選択されたサイズのみ true にする） */}
+                  <input
+                    type="checkbox"
+                    id={`size-${size.id}`}
+                    name="size"
+                    checked={selectedSize === size.id.toString()}
+                    onChange={() => {
+                      // すでに選択されている場合は解除、未選択の場合は選択
+                      if (selectedSize === size.id.toString()) {
+                        setSelectedSize(null);
+                      } else {
+                        setSelectedSize(size.id.toString());
+                      }
+                    }}
+                  />
+                  <label htmlFor={`size-${size.id}`}>
+                    {size.size}
+                  </label>
+                </div>
+              ))}
+            </div>
 
-          {/* <h3 className={detailStyle.optionTitle}>
+            {/* <h3 className={detailStyle.optionTitle}>
             ライス大盛り: 300円
           </h3>
           <div className={detailStyle.optionTag}>
@@ -307,97 +391,87 @@ export default function Details({ jsonData }: { jsonData: Item }) {
               })
             }
           </div> */}
-          <h3 className={detailStyle.optionTitle}>
-            トッピング: 1つにつき100円（税抜）
-          </h3>
-          <div className={detailStyle.optionTag}>
-            {
-              //toppingのデータを一つ一つ表示
-              toppings.map(
-                ({ name, price, id }: Topping, index: any) => {
-                  if (price !== 100) return;
-                  return (
-                    <>
-                      <input
-                        type="checkbox"
-                        id={name}
-                        name={name}
-                        checked={!!checkedToppingsArray[index]}
-                        onChange={() => onChangeCheck(index)}
-                      />
-                      <label htmlFor={name}>{name}</label>
-                    </>
-                  );
-                }
-              )
-            }
+            <h3 className={detailStyle.optionTitle}>
+              トッピング: 1つにつき100円（税抜）
+            </h3>
+            <div className={detailStyle.optionTag}>
+              {
+                //toppingのデータを一つ一つ表示
+                toppings.map(
+                  ({ name, price, id }: Topping, index: any) => {
+                    if (price !== 100) return;
+                    return (
+                      <>
+                        <input
+                          type="checkbox"
+                          id={name}
+                          name={name}
+                          checked={!!checkedToppingsArray[index]}
+                          onChange={() => onChangeCheck(index)}
+                        />
+                        <label htmlFor={name}>{name}</label>
+                      </>
+                    );
+                  }
+                )
+              }
+            </div>
+            <h3 className={detailStyle.optionTitle}>
+              トッピング: 1つにつき200円（税抜）
+            </h3>
+            <div className={detailStyle.optionTag}>
+              {
+                //toppingのデータを一つ一つ表示
+                toppings.map(
+                  ({ name, price, id }: Topping, index: any) => {
+                    if (price !== 200) return;
+                    return (
+                      <>
+                        <input
+                          type="checkbox"
+                          id={name}
+                          name={name}
+                          checked={checkedToppingsArray[index]}
+                          onChange={() => onChangeCheck(index)}
+                        />
+                        <label htmlFor={name}>{name}</label>
+                      </>
+                    );
+                  }
+                )
+              }
+            </div>
+            <h3 className={detailStyle.quantity}>数量:</h3>
+            <select
+              name="count"
+              id="count"
+              className={detailStyle.select}
+              value={count}
+              onChange={onChangeCount}
+            >
+              {arr.map((el) => (
+                <option key={el} value={el}>
+                  {el}
+                </option>
+              ))}
+            </select>
           </div>
-          <h3 className={detailStyle.optionTitle}>
-            トッピング: 1つにつき200円（税抜）
-          </h3>
-          <div className={detailStyle.optionTag}>
-            {
-              //toppingのデータを一つ一つ表示
-              toppings.map(
-                ({ name, price, id }: Topping, index: any) => {
-                  if (price !== 200) return;
-                  return (
-                    <>
-                      <input
-                        type="checkbox"
-                        id={name}
-                        name={name}
-                        checked={checkedToppingsArray[index]}
-                        onChange={() => onChangeCheck(index)}
-                      />
-                      <label htmlFor={name}>{name}</label>
-                    </>
-                  );
-                }
-              )
-            }
-          </div>
-          <h3 className={detailStyle.quantity}>数量:</h3>
-          <select
-            name="count"
-            id="count"
-            className={detailStyle.select}
-            value={count}
-            onChange={onChangeCount}
-          >
-            {arr.map((el) => (
-              <option key={el} value={el}>
-                {el}
-              </option>
-            ))}
-          </select>
-        </div>
-        <p className={detailStyle.total}>
-          この商品金額:{' '}
-          {String(
-            (price + selectedSizeExtraPrice + totalToppingPrice) *
-              count
-          ).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}
-          円（税抜）
-        </p>
-        {itemDetail === true ? (
+          <p className={detailStyle.total}>
+            この商品金額:{' '}
+            {String(
+              (price + selectedSizeExtraPrice + totalToppingPrice) *
+                count
+            ).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}
+            円（税抜）
+          </p>
           <MainBtn
             className={detailStyle.Btn}
-            onClick={(): any => onClickDec()}
-            value={'確定'}
-            type={undefined}
+            value={'カートに追加'}
+            type="button"
+            onClick={handleAddToCart}
+            disabled={!selectedSize}
           />
-        ) : (
-          <Link href="/" legacyBehavior>
-            <MainBtn
-              className={detailStyle.Btn}
-              onClick={() => onClickCart()}
-              value={'カートに追加'}
-              type={undefined}
-            />
-            {/* <button className={detailStyle.Btn} onClick={() => onClickCart()}>カートに追加</button> */}
-          </Link>
-        )}
+        </div>
       </Layout>
     </>
   );

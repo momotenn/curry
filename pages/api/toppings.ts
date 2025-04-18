@@ -22,7 +22,7 @@ export default async function handler(
     });
     const toppings = await response.json();
     res.status(200).json(toppings);
-    console.log('📝トッピング', toppings);
+    // console.log('📝トッピング', toppings);
   } catch (error) {
     console.error('Error fetching toppings:', error);
     res.status(500).json({ message: 'Internal Server Error' });
