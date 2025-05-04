@@ -34,8 +34,7 @@ export async function getStaticPaths() {
       fallback: false,
     };
   } catch (error) {
-    console.error('❌ getStaticPathsでDB接続失敗:', error);
-    throw error;
+    return undefined;
   }
 }
 
@@ -79,7 +78,6 @@ export async function getStaticProps({
       revalidate: 10, // ISRを使う場合
     };
   } catch (error) {
-    console.error('❌Error fetching item:', error);
     return {
       notFound: true,
     };
