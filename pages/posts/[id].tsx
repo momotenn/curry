@@ -34,7 +34,10 @@ export async function getStaticPaths() {
       fallback: false,
     };
   } catch (error) {
-    return undefined;
+    return {
+      paths: [],
+      fallback: false,
+    };
   }
 }
 
