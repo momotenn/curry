@@ -1,13 +1,19 @@
-import Image from 'next/image'
-import { Swiper, SwiperSlide } from 'swiper/react' //カルーセル用のタグをインポート
-import SwiperCore, { Pagination, Navigation, Autoplay, EffectFade, EffectCoverflow } from 'swiper' //使いたい機能をインポート
+import Image from 'next/image';
+import { Swiper, SwiperSlide } from 'swiper/react'; //カルーセル用のタグをインポート
+import SwiperCore, {
+  Pagination,
+  Navigation,
+  Autoplay,
+  EffectFade,
+  EffectCoverflow,
+} from 'swiper'; //使いたい機能をインポート
 import 'swiper/css';
-import s from './SwiperStyle.module.css';
+import s from '../../styles/SwiperStyle.module.css';
 
-SwiperCore.use([Pagination, Navigation, Autoplay, EffectCoverflow])
+SwiperCore.use([Pagination, Navigation, Autoplay, EffectCoverflow]);
 
 const images = [
-  "/img_curry/1.jpg",
+  '/img_curry/1.jpg',
   '/img_curry/2.jpg',
   '/img_curry/3.jpg',
   '/img_curry/4.jpg',
@@ -17,13 +23,13 @@ const images = [
   '/img_curry/9.jpg',
   '/img_curry/10.jpg',
   '/img_curry/11.jpg',
-]
+];
 
 export function SwiperAtom() {
   return (
-    <div className='py-20' >
+    <div className="py-20">
       <Swiper
-        effect={"coverflow"}
+        effect={'coverflow'}
         coverflowEffect={{
           rotate: 0,
           stretch: 0,
@@ -55,9 +61,9 @@ export function SwiperAtom() {
                 alt="test_image"
               />
             </SwiperSlide>
-          )
+          );
         })}
       </Swiper>
     </div>
-  )
+  );
 }

@@ -1,11 +1,9 @@
-import styles from './layout.module.css';
+import styles from '../styles/layout.module.css';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { User } from '../types/types';
-import { userAgent } from 'next/server';
+
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { BreadCrumb } from './Breadcrumb';
 
 export function Layout({
   children,
@@ -109,7 +107,7 @@ export function Layout({
               )}
               {loginShow === true && (
                 <>
-                  <Link href="/history">
+                  <Link href="/">
                     <li>注文履歴</li>
                   </Link>
                   <li>{decodeURIComponent(userName)}さん</li>
@@ -143,7 +141,7 @@ export function Layout({
               )}
               {loginShow === true && (
                 <>
-                  <Link href="/history">
+                  <Link href="/">
                     <li>注文履歴</li>
                   </Link>
                   <li>{decodeURIComponent(userName)}さん</li>

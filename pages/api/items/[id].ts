@@ -31,7 +31,7 @@ export default async function handler(
       queryParams.append('toppingId', req.query.toppingId);
     }
 
-    const url = `${BACKEND_BASE_URL}/items/${id}?${queryParams.toString()}`;
+    const url = `localhost:4000/items/${id}?${queryParams.toString()}`;
     console.log('🔗 Fetching URL:', url);
 
     const response = await fetch(url, {

@@ -1,14 +1,10 @@
 import { useRouter } from 'next/router';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import styles from '../component/check.module.css';
+import styles from '../styles/check.module.css';
 import React from 'react';
 // import StripeApi from '../lib/stripe';
 import OrderCheck from '../components/Cluculate';
-import Head from 'next/head';
-import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import CheckoutForm from '../components/CheckoutForm';
 
 type CartItem = {
   name: string;

@@ -1,35 +1,35 @@
-import { Item } from "../../types/types";
-import { InputText } from "../atoms/InputText";
-import { MainBtn } from "../atoms/MainBtn";
-import { SubBtn } from "../atoms/SubBtn";
-import styles from '../items.module.css';
+import { Item } from '../../types/types';
+import { InputText } from '../atoms/InputText';
+import { MainBtn } from '../atoms/MainBtn';
+import { SubBtn } from '../atoms/SubBtn';
+import styles from '../../styles/items.module.css';
 import sugStyles from '../../styles/suggest.module.css';
 
-type ItemSearchProps = { 
-  onChangeInput: any, 
-  onClickMain: any, 
-  onClickSub: any,
-  nameText: string,
-  onChangeNameText: any,
-  showSug: boolean,
-  suggestData: string[],
-  onClickSuggest: any,
-  onClickSearch: any,
-  formReset: any,
-  sortSelect: any,
-  onChangeSortSelect: any
-}
+type ItemSearchProps = {
+  onChangeInput: any;
+  onClickMain: any;
+  onClickSub: any;
+  nameText: string;
+  onChangeNameText: any;
+  showSug: boolean;
+  suggestData: string[];
+  onClickSuggest: any;
+  onClickSearch: any;
+  formReset: any;
+  sortSelect: any;
+  onChangeSortSelect: any;
+};
 
 export function ItemSearch({
-    onChangeInput, 
-    onClickMain, 
-    onClickSub, 
-    nameText, 
-    showSug,
-    suggestData,
-    onClickSuggest,
-    sortSelect,
-    onChangeSortSelect
+  onChangeInput,
+  onClickMain,
+  onClickSub,
+  nameText,
+  showSug,
+  suggestData,
+  onClickSuggest,
+  sortSelect,
+  onChangeSortSelect,
 }: ItemSearchProps) {
   return (
     <>
@@ -110,5 +110,5 @@ export function ItemSearch({
         </div>
       </div>
     </>
-  )
+  );
 }

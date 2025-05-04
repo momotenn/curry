@@ -1,11 +1,7 @@
-import Link from 'next/link';
-import useSWR from 'swr';
 import { Item } from '../../types/types';
 import React, { useEffect, useState } from 'react';
 import { Layout } from '../layout';
-import styles from '../items.module.css';
-import { arrayBuffer } from 'stream/consumers';
-import sugStyles from '../styles/suggest.module.css';
+import styles from '../../styles/items.module.css';
 import { ItemSearch } from '../molecules/ItemSearch';
 import { ItemCard } from '../atoms/ItemCard';
 import { SwiperAtom } from '../atoms/SwiperAtom';

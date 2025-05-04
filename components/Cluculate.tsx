@@ -1,10 +1,5 @@
-import useSWR from 'swr';
 import { Layout } from './layout';
-import { OrderItem } from '../types/types';
-import Customer from './Cluculate';
-import styles from '../component/check.module.css';
-import Link from 'next/link';
-import { json } from 'stream/consumers';
+import styles from './../styles/check.module.css';
 import { CartItem } from '../types/cart';
 
 type OrderCheckProps = {

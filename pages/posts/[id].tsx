@@ -1,13 +1,13 @@
 import { Pool } from 'pg';
-import { privateDecrypt } from 'crypto';
+
 import Link from 'next/link';
-import { use, useEffect, useState } from 'react';
-import useSWR, { mutate } from 'swr';
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import { fetcher } from '../../components/templates/jsonitems';
 import { Layout } from '../../components/layout';
-import { getAllJsonIds, getJsonData } from '../../lib/json';
+
 import { Item, Topping } from '../../types/types';
-import detailStyle from '../../component/details.module.css';
+import detailStyle from '../../styles/details.module.css';
 import Head from 'next/head';
 import { MainBtn } from '../../components/atoms/MainBtn';
 import { useRouter } from 'next/router';
@@ -48,7 +48,7 @@ export async function getStaticProps({
   try {
     const host = process.env.NEXT_PUBLIC_HOST;
 
-    const url = `${host}/api/items/${params.id}?size=S&toppingId=`;
+    const url = `localhost:3000/api/items/${params.id}?size=S&toppingId=`;
 
     const res = await fetch(url);
 

@@ -1,6 +1,5 @@
 import styles from '../component/items.module.css';
 import { getStaticProps } from '../pages/posts/[id]';
-import Items from './jsonitems';
 
 export const FormReset = (props: any) => {
   return (

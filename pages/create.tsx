@@ -3,9 +3,6 @@ import { useState } from 'react';
 import styles from '../styles/create.module.css';
 import { Layout } from '../components/layout';
 import Head from 'next/head';
-import useSWR from 'swr';
-import { set } from 'react-hook-form';
-import { on } from 'events';
 
 interface FormState {
   lastName: string;
