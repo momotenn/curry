@@ -38,7 +38,7 @@ export type OrderItem = {
 };
 
 export type Item = {
-  id: number;
+  jsonId: number;
   type: string;
   name: string;
   description: string;

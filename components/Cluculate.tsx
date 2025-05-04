@@ -5,18 +5,29 @@ import Customer from './Cluculate';
 import styles from '../component/check.module.css';
 import Link from 'next/link';
 import { json } from 'stream/consumers';
+import { CartItem } from '../types/cart';
 
-export const fetcher: (args: string) => Promise<any> = (...args) =>
-  fetch(...args).then((res) => res.json());
+type OrderCheckProps = {
+  carts: CartItem[];
+  subTotal: number;
+};
 
-export default function OrderCheck() {
-  const { data, error } = useSWR(
-    'http://localhost:8000/order',
-    fetcher
-  );
+export default function OrderCheck({
+  carts,
+  subTotal,
+}: OrderCheckProps) {
+  if (carts.length === 0) return <div>カートが空です</div>;
 
-  if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
+  console.log('subTotal', subTotal);
+  console.log('carts', carts);
+
+  // 合計計算ロジックは親から `subTotal` 等を渡してもいい
+
+  const tax = Math.floor(subTotal * 0.1);
+  const totalWithTax = subTotal + tax;
+
+  if (!carts || carts.length === 0) return <div>カートが空です</div>;
+  if (isNaN(subTotal)) return <div>合計金額の計算に失敗しました</div>;
 
   // const onClickCheck = () => {
   //   //@ts-ignore
@@ -65,10 +76,9 @@ export default function OrderCheck() {
   // };
 
   //　中身がtotalPriceだけの配列をpushする
-  let total: number[] = [];
 
   return (
-    (<Layout show={true}>
+    <Layout show={true}>
       <div>
         <h1 className={styles.title}>注文内容確認</h1>
         <table className={styles.item} border={1}>
@@ -81,34 +91,30 @@ export default function OrderCheck() {
             </tr>
           </thead>
           <tbody>
-            {data.map(
+            {carts.map(
               ({
                 name,
                 id,
                 TotalPrice,
                 price,
                 imagePath,
-                count,
+                quantity,
                 toppingList,
-              }: any) => {
+              }: CartItem) => {
                 return (
-                  (<tr key={id}>
+                  <tr key={id}>
                     <td>
                       <img src={imagePath} width={100} />
                       <p>{name}</p>
                     </td>
                     <td>
-                      数量：{count}個
+                      数量：{quantity}個
                       <br />
                       単品価格：
-                      {String(price).replace(
-                        /(\d)(?=(\d\d\d)+(?!\d))/g,
-                        '$1,'
-                      )}
-                      円
+                      {price.toLocaleString()}円
                     </td>
                     <td>
-                      {toppingList.map((topping: any) => (
+                      {toppingList.map((topping) => (
                         <ul key={id}>
                           <li className={styles.topping}>
                             {topping.name} 200円
@@ -116,14 +122,8 @@ export default function OrderCheck() {
                         </ul>
                       ))}
                     </td>
-                    <td>
-                      {String(TotalPrice).replace(
-                        /(\d)(?=(\d\d\d)+(?!\d))/g,
-                        '$1,'
-                      )}
-                      円
-                    </td>
-                  </tr>)
+                    <td>{TotalPrice.toLocaleString()}円</td>
+                  </tr>
                 );
               }
             )}
@@ -131,29 +131,13 @@ export default function OrderCheck() {
         </table>
 
         <div className={styles.total}>
-          {data.map(({ TotalPrice }: any) => {
-            total.push(TotalPrice);
-          })}
           <p>
             消費税：
-            {String(
-              Math.floor(
-                total.reduce(function (sum, element) {
-                  return sum + element;
-                }, 0) / 10
-              )
-            ).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}
-            円
+            {tax.toLocaleString()}円
           </p>
           <p>
             ご注文金額合計：
-            {String(
-              Math.floor(
-                total.reduce(function (sum, element) {
-                  return sum + element;
-                }, 0) * 1.1
-              )
-            ).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')}
+            {totalWithTax.toLocaleString()}
             円（税込）
           </p>
         </div>
@@ -170,6 +154,6 @@ export default function OrderCheck() {
           </button>
         </Link> */}
       </div>
-    </Layout>)
+    </Layout>
   );
 }

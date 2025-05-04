@@ -6,25 +6,27 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // GET メソッド以外は拒否
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', ['GET']);
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
     return res
       .status(405)
       .json({ message: `Method ${req.method} not allowed` });
   }
 
   try {
-    const response = await fetch(`${BACKEND_BASE_URL}/toppings`, {
+    const response = await fetch(`${BACKEND_BASE_URL}/users`, {
+      method: 'POST',
       headers: {
-        Authorization: 'Basic ' + btoa('admin:supersecret'),
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify(req.body),
     });
-    const toppings = await response.json();
-    res.status(200).json(toppings);
-    // console.log('📝トッピング', toppings);
+
+    const data = await response.json();
+    res.status(response.status).json(data);
+    console.log('📡 APIステータス:', response.status);
   } catch (error) {
-    console.error('Error fetching toppings:', error);
+    console.error('❌ Error fetching users:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 }
