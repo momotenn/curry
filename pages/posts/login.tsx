@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import { Layout } from '../../component/layout';
+import { Layout } from '../../components/layout';
 import styles from '../../styles/login.module.css';
 import { useRouter } from 'next/router';
 

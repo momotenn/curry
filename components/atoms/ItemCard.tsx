@@ -1,7 +1,22 @@
 import Link from 'next/link';
 import { Item } from '../../types/types';
 
-export function ItemCard({ id, name, price, imagepath }: Item) {
+type ItemCardProps = {
+  id: number;
+  name: string;
+  price: number;
+  imagepath: string;
+  type: string;
+  description: string;
+  delete: boolean;
+};
+
+export function ItemCard({
+  id,
+  name,
+  price,
+  imagepath,
+}: ItemCardProps) {
   return (
     <Link href={`/posts/${id}`} legacyBehavior>
       <div className="overflow-hidden shadow-lg rounded-lg h-90 w-60 md:w-80 cursor-pointer m-auto">

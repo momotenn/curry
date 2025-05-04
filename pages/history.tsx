@@ -1,5 +1,5 @@
 import useSWR, { mutate, useSWRConfig } from 'swr';
-import { Layout } from '../component/layout';
+import { Layout } from '../components/layout';
 import styles from '../component/check.module.css';
 import style from '../styles/order.module.css';
 import Head from 'next/head';
@@ -22,7 +22,7 @@ export default function History() {
   if (error) return <div>Failed to load</div>;
   if (!data) return <div>Loading...</div>;
   return (
-    (<Layout show={true}>
+    <Layout show={true}>
       <Head>
         <title>注文履歴</title>
       </Head>
@@ -45,7 +45,7 @@ export default function History() {
               <tbody>
                 {data.history.map((e: any) => {
                   return (
-                    (<tr key={e.id}>
+                    <tr key={e.id}>
                       <td>
                         <img src={e.imagePath} width={100} />
                         <p>{e.name}</p>
@@ -79,7 +79,7 @@ export default function History() {
                       <td>
                         {e.day} {e.time}
                       </td>
-                    </tr>)
+                    </tr>
                   );
                 })}
               </tbody>
@@ -87,6 +87,6 @@ export default function History() {
           </>
         )}
       </div>
-    </Layout>)
+    </Layout>
   );
 }

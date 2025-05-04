@@ -1,6 +1,6 @@
 import { json } from 'stream/consumers';
 import useSWR, { useSWRConfig } from 'swr';
-import { Layout } from '../component/layout';
+import { Layout } from '../components/layout';
 import { Item, OrderItem } from '../types/types';
 import styles from '../styles/order.module.css';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ import utilStyles from '../styles/utils.module.css';
 import checkStyles from '../component/check.module.css';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { SwiperAtom } from '../component/atoms/SwiperAtom';
+import { SwiperAtom } from '../components/atoms/SwiperAtom';
 import { useRouter } from 'next/router';
 
 interface Cart {

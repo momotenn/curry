@@ -3,13 +3,13 @@ import { privateDecrypt } from 'crypto';
 import Link from 'next/link';
 import { use, useEffect, useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { fetcher } from '../../component/templates/jsonitems';
-import { Layout } from '../../component/layout';
+import { fetcher } from '../../components/templates/jsonitems';
+import { Layout } from '../../components/layout';
 import { getAllJsonIds, getJsonData } from '../../lib/json';
 import { Item, Topping } from '../../types/types';
 import detailStyle from '../../component/details.module.css';
 import Head from 'next/head';
-import { MainBtn } from '../../component/atoms/MainBtn';
+import { MainBtn } from '../../components/atoms/MainBtn';
 import { useRouter } from 'next/router';
 import { CartItem } from '../../types/cart';
 

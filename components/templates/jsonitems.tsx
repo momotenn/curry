@@ -9,11 +9,13 @@ import sugStyles from '../styles/suggest.module.css';
 import { ItemSearch } from '../molecules/ItemSearch';
 import { ItemCard } from '../atoms/ItemCard';
 import { SwiperAtom } from '../atoms/SwiperAtom';
+import { useRouter } from 'next/router';
 
 export const fetcher: (args: string) => Promise<any> = (...args) =>
   fetch(...args).then((res) => res.json());
 
 export default function Items() {
+  const router = useRouter();
   // 並び替え用のstate
   const [sortSelect, setSortSelect] = useState('up');
   const onChangeSortSelect = (event: any) =>
@@ -165,6 +167,15 @@ export default function Items() {
     <Layout show={true}>
       {/*@ts-ignore*/}
       <SwiperAtom />
+      <div className={styles.aiBtnWrapper}>
+        <button
+          type="button"
+          onClick={() => router.push('/ai')}
+          className={styles.aiBtn}
+        >
+          AIセレクト
+        </button>
+      </div>
       <ItemSearch
         onChangeInput={onChangeNameText}
         onClickMain={() => onClickSearch()}
@@ -185,12 +196,12 @@ export default function Items() {
           // 「？」はtrue、「:」はfalse
           // 検索テキストが空の場合
           data.map((item: Item) => {
-            const { id, name, price, imagepath } = item;
+            const { jsonId, name, price, imagepath } = item;
             return (
               // @ts-ignore
-              <div key={id}>
+              <div key={jsonId}>
                 <ItemCard
-                  id={id}
+                  id={jsonId}
                   name={name}
                   price={price}
                   imagepath={imagepath}
@@ -206,12 +217,12 @@ export default function Items() {
           <p className={styles.p}>該当する商品がありません。</p>
         ) : (
           searchData.map((item: Item) => {
-            const { id, name, price, imagepath } = item;
+            const { jsonId, name, price, imagepath } = item;
             return (
               // @ts-ignore
-              <div key={id}>
+              <div key={jsonId}>
                 <ItemCard
-                  id={id}
+                  id={jsonId}
                   name={name}
                   price={price}
                   imagepath={imagepath}

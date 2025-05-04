@@ -1,5 +1,7 @@
 // types/cart.ts
-export interface CartItem {
+import { type } from 'os';
+
+export type CartItem = {
   id: number;
   name: string;
   price: number;
@@ -8,10 +10,10 @@ export interface CartItem {
   size: string;
   size_price: number;
   toppingList: {
-    id: number;
+    id?: number;
     name: string;
     price: number;
-    checked: boolean;
+    checked?: boolean;
   }[];
   TotalPrice: number;
-}
+};
